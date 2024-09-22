@@ -13,7 +13,16 @@
 from snowflake.snowpark import Session
 #import snowflake.snowpark.types as T
 import snowflake.snowpark.functions as F
+import os
 
+connection_parameters = {
+    "account": os.getenv('SNOWFLAKE_ACCOUNT'),
+    "user": os.getenv('SNOWFLAKE_USERNAME'),
+    "password":os.getenv('SNOWFLAKE_PASSWORD'),
+    "role": "HOL_ROLE",
+    "warehouse": "HOL_WH",
+    "database": "HOL_DB",
+    "schema": "RAW_POS"}
 
 def create_pos_view(session):
     session.use_schema('HARMONIZED')
@@ -107,7 +116,10 @@ def test_pos_view(session):
 # For local debugging
 if __name__ == "__main__":
     # Create a local Snowpark session
-    with Session.builder.getOrCreate() as session:
+    session = Session.builder.configs(connection_parameters).create()
+    create_pos_view(session)
+    create_pos_view_stream(session)
+    '''with Session.builder.getOrCreate() as session:
         create_pos_view(session)
-        create_pos_view_stream(session)
+        create_pos_view_stream(session)'''
 #        test_pos_view(session)

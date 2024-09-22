@@ -7,8 +7,18 @@
 
 import time
 from snowflake.snowpark import Session
+import os
 #import snowflake.snowpark.types as T
 #import snowflake.snowpark.functions as F
+# Define your connection parameters
+connection_parameters = {
+    "account": os.getenv('SNOWFLAKE_ACCOUNT'),
+    "user": os.getenv('SNOWFLAKE_USERNAME'),
+    "password":os.getenv('SNOWFLAKE_PASSWORD'),
+    "role": "HOL_ROLE",
+    "warehouse": "HOL_WH",
+    "database": "HOL_DB",
+    "schema": "RAW_POS"}
 
 
 POS_TABLES = ['country', 'franchise', 'location', 'menu', 'truck', 'order_header', 'order_detail']
@@ -66,7 +76,12 @@ def validate_raw_tables(session):
 
 # For local debugging
 if __name__ == "__main__":
-    # Create a local Snowpark session
+    # Create a local Snowpark session with connection parameters
+    session = Session.builder.configs(connection_parameters).create()
+    load_all_raw_tables(session)
+    
+'''    # Create a local Snowpark session
     with Session.builder.getOrCreate() as session:
         load_all_raw_tables(session)
-#        validate_raw_tables(session)
+#        validate_raw_tables(session)'''
+
